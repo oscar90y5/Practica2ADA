@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -5,7 +8,7 @@ import java.util.Scanner;
  * Created by oscar on 13/10/16.
  */
 public class practicaADA2 {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException{
         //Lectura de los datos por teclado:
         Scanner sc = new Scanner(System.in);
         System.out.println("Introduzca los numeros del subconjunto: (Para finalizar introduzca un 0)");
@@ -24,25 +27,23 @@ public class practicaADA2 {
             i++;
         }
 
-        imprimeSol(algoritmaco(subConjunto,sum));
+        imprimeSol(backtracking(subConjunto,sum));
+        escribeFichero(backtracking(subConjunto,sum));
 
 
 
 
     }
 
-    private static ArrayList<ArrayList<Integer>> algoritmaco(ArrayList<Integer> subcon, int sum){
+    private static ArrayList<ArrayList<Integer>> backtracking(ArrayList<Integer> subcon, int sum){
         ArrayList<ArrayList<Integer>> soluciones = new ArrayList<>();
         ArrayList<Integer> puntoBack = new ArrayList<>();
         puntoBack.add(0);
         int suma=0;
         soluciones.add(new ArrayList<Integer>());
         while(puntoBack.get(0) < (subcon.size()-1)){
-            imprimeSol(soluciones);
-            imprimeBack(puntoBack);
             suma+=subcon.get(puntoBack.get(puntoBack.size()-1));
             if(suma==sum){
-                System.out.println("ENCUENTRA----------------");
                 //encontramos Solucion!!
                 //copiamos la parte de la solucion que teniamos para poder seguir buscando nuevas soluciones desde ahi.
                 soluciones.add((ArrayList<Integer>) soluciones.get(soluciones.size()-1).clone());
@@ -53,13 +54,11 @@ public class practicaADA2 {
                 suma=sigPrueba(puntoBack,subcon.size(),soluciones,suma);
             } else{
                 if(suma<sum){
-                    System.out.println("MENOR-------------------");
                     //añadimos el numero a la solucion y seguimos buscando
                     soluciones.get(soluciones.size()-1).add(subcon.get(puntoBack.get(puntoBack.size()-1)));
                     puntoBack.add(puntoBack.get(puntoBack.size()-1));
                     suma=sigPrueba(puntoBack,subcon.size(),soluciones,suma);
                 } else {
-                    System.out.println("MAYOR--------------------");
                     //eliminamos el ultimo numero de suma y seguimos buscando
                     suma-=subcon.get(puntoBack.get(puntoBack.size()-1));
                     suma=sigPrueba(puntoBack,subcon.size(),soluciones,suma);
@@ -96,7 +95,7 @@ public class practicaADA2 {
 
     private static void imprimeSol(ArrayList<ArrayList<Integer>> solucion){
         for(int i=0;i<solucion.size();i++){
-            System.out.print("Solucion "+(i+1)+"\n");
+            System.out.print("Solucion "+(i+1)+":\n");
 
             for(int j=0;j<solucion.get(i).size();j++){
 
@@ -116,5 +115,21 @@ public class practicaADA2 {
         }
             System.out.print("\n");
 
+    }
+
+    private static void escribeFichero(ArrayList<ArrayList<Integer>> solucion) throws IOException{
+        FileWriter fichero = new FileWriter("../practicaADA2/solucion.txt");
+        PrintWriter pw = new PrintWriter(fichero);
+
+        for(int i=0;i<solucion.size();i++){
+            pw.print("Solucion "+(i+1)+":\n");
+
+            for(int j=0;j<solucion.get(i).size();j++){
+
+                pw.print(solucion.get(i).get(j)+" ");
+            }
+            pw.print("\n");
+        }
+        fichero.close();
     }
 }
