@@ -8,12 +8,17 @@ import java.util.Scanner;
  * Created by oscar on 13/10/16.
  */
 public class practicaADA2 {
+    static ArrayList<Integer> subConjunto;
+    static int sum;
+    static FileWriter fichero;
+    static PrintWriter pw;
     public static void main(String[] args) throws IOException{
+
         //Lectura de los datos por teclado:
         Scanner sc = new Scanner(System.in);
         System.out.println("Introduzca los numeros del subconjunto: (Para finalizar introduzca un 0)");
-        ArrayList<Integer> subConjunto = new ArrayList<>();
-        int i=0, dato, sum;
+        subConjunto = new ArrayList<>();
+        int i=0, dato;
         while(true){
             System.out.println("Dato "+(i+1)+":");
             dato=sc.nextInt();
@@ -26,9 +31,12 @@ public class practicaADA2 {
             }
             i++;
         }
+        fichero = new FileWriter("../practicaADA2/solucion.txt");
+        pw = new PrintWriter(fichero);
 
-        imprimeSol(backtracking(subConjunto,sum));
-        escribeFichero(backtracking(subConjunto,sum));
+        backRecursivo(0,0,new ArrayList<Integer>());
+
+        fichero.close();
 
 
 
@@ -118,8 +126,6 @@ public class practicaADA2 {
     }
 
     private static void escribeFichero(ArrayList<ArrayList<Integer>> solucion) throws IOException{
-        FileWriter fichero = new FileWriter("../practicaADA2/solucion.txt");
-        PrintWriter pw = new PrintWriter(fichero);
 
         for(int i=0;i<solucion.size();i++){
             pw.print("Solucion "+(i+1)+":\n");
@@ -131,5 +137,27 @@ public class practicaADA2 {
             pw.print("\n");
         }
         fichero.close();
+    }
+
+
+    private static void backRecursivo (int suma, int i, ArrayList<Integer> solucion){
+        if(suma<sum && i<(subConjunto.size()-1)){
+            for(int j=i;j<subConjunto.size();j++) {
+                int s = suma + subConjunto.get(j);
+                ArrayList<Integer> sol = (ArrayList<Integer>) solucion.clone();
+                sol.add(subConjunto.get(j));
+                //System.out.print("i --> "+i+";\nsuma --> "+s+";\n\n");
+                backRecursivo(s, j + 1, sol);
+            }
+        } else {
+            if(suma==sum){
+                for(int j=0;j<solucion.size();j++){
+                    System.out.print(solucion.get(j)+" ");
+                    pw.print(solucion.get(j)+" ");
+                }
+                System.out.print("\n");
+                pw.print("\n");
+            }
+        }
     }
 }
