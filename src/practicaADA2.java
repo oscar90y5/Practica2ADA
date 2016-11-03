@@ -8,10 +8,12 @@ import java.util.Scanner;
  * Created by oscar on 13/10/16.
  */
 public class practicaADA2 {
-    static ArrayList<Integer> subConjunto;
-    static int sum;
-    static FileWriter fichero;
-    static PrintWriter pw;
+
+    private static ArrayList<Integer> subConjunto; //Almacena el subconjunto de entrada.
+    private static int sum; //Almacena la suma que buscamos.
+    private static FileWriter fichero; //fichero en el que escribimos la solucion.
+    private static PrintWriter pw;
+
     public static void main(String[] args) throws IOException{
 
         //Lectura de los datos por teclado:
@@ -31,133 +33,72 @@ public class practicaADA2 {
             }
             i++;
         }
+
+
         fichero = new FileWriter("../practicaADA2/solucion.txt");
         pw = new PrintWriter(fichero);
 
-        backRecursivo(0,0,new ArrayList<Integer>());
+        depuraEntrada();
+        backtracking(0,0,new ArrayList<Integer>());
 
         fichero.close();
-
-
-
-
     }
 
-    private static ArrayList<ArrayList<Integer>> backtracking(ArrayList<Integer> subcon, int sum){
-        ArrayList<ArrayList<Integer>> soluciones = new ArrayList<>();
-        ArrayList<Integer> puntoBack = new ArrayList<>();
-        puntoBack.add(0);
-        int suma=0;
-        soluciones.add(new ArrayList<Integer>());
-        while(puntoBack.get(0) < (subcon.size()-1)){
-            suma+=subcon.get(puntoBack.get(puntoBack.size()-1));
-            if(suma==sum){
-                //encontramos Solucion!!
-                //copiamos la parte de la solucion que teniamos para poder seguir buscando nuevas soluciones desde ahi.
-                soluciones.add((ArrayList<Integer>) soluciones.get(soluciones.size()-1).clone());
+    private static void backtracking (int suma, int i, ArrayList<Integer> solucion){
 
-                //añadimos el ultimo numero a la solucion anterior
-                soluciones.get(soluciones.size()-2).add(subcon.get(puntoBack.get(puntoBack.size()-1)));
-                suma-=soluciones.get(soluciones.size()-2).get(soluciones.get(soluciones.size()-2).size()-1);
-                suma=sigPrueba(puntoBack,subcon.size(),soluciones,suma);
-            } else{
-                if(suma<sum){
-                    //añadimos el numero a la solucion y seguimos buscando
-                    soluciones.get(soluciones.size()-1).add(subcon.get(puntoBack.get(puntoBack.size()-1)));
-                    puntoBack.add(puntoBack.get(puntoBack.size()-1));
-                    suma=sigPrueba(puntoBack,subcon.size(),soluciones,suma);
-                } else {
-                    //eliminamos el ultimo numero de suma y seguimos buscando
-                    suma-=subcon.get(puntoBack.get(puntoBack.size()-1));
-                    suma=sigPrueba(puntoBack,subcon.size(),soluciones,suma);
-                }
-            }
+        int s;
 
+        if(suma<sum && i<(subConjunto.size())){
 
-        }
-        soluciones.remove(soluciones.size()-1);
-        return soluciones;
-    }
-
-    /* Coloca en puntoBack los indices de la siguiente prueba.
-     * LLamada: sigPrueba(puntoBack, subcon.size());
-     */
-    private static int sigPrueba(ArrayList<Integer> puntoBack, int tamSub, ArrayList<ArrayList<Integer>> soluciones, int suma){
-        if(puntoBack.get(puntoBack.size()-1)<(tamSub-1)){
-            //incrementamos el ultimo indice en uno
-            puntoBack.set(puntoBack.size()-1, puntoBack.get(puntoBack.size()-1)+1);
-            return suma;
-        } else {
-            //eliminamos el ultimo indice y volvemos a llamar a esta funcion (Backtracking)
-            //eliminamos de la suma total el elemento que quitamos de la solucion.
-            suma-=soluciones.get(soluciones.size()-1).get(soluciones.get(soluciones.size()-1).size()-1);
-            //Eliminamos el ultimo indice
-            puntoBack.remove(puntoBack.size()-1);
-            //eliminamos de la solucion el ultimo elemento
-            soluciones.get(soluciones.size()-1).remove(soluciones.get(soluciones.size()-1).size()-1);
-            return sigPrueba(puntoBack,tamSub,soluciones,suma);
-
-
-        }
-    }
-
-    private static void imprimeSol(ArrayList<ArrayList<Integer>> solucion){
-        for(int i=0;i<solucion.size();i++){
-            System.out.print("Solucion "+(i+1)+":\n");
-
-            for(int j=0;j<solucion.get(i).size();j++){
-
-                System.out.print(solucion.get(i).get(j)+" ");
-            }
-            System.out.print("\n");
-        }
-    }
-
-    private static void imprimeBack(ArrayList<Integer> solucion){
-
-        System.out.print("Back\n");
-        for(int i=0;i<solucion.size();i++) {
-
-
-            System.out.print(solucion.get(i) + " ");
-        }
-            System.out.print("\n");
-
-    }
-
-    private static void escribeFichero(ArrayList<ArrayList<Integer>> solucion) throws IOException{
-
-        for(int i=0;i<solucion.size();i++){
-            pw.print("Solucion "+(i+1)+":\n");
-
-            for(int j=0;j<solucion.get(i).size();j++){
-
-                pw.print(solucion.get(i).get(j)+" ");
-            }
-            pw.print("\n");
-        }
-        fichero.close();
-    }
-
-
-    private static void backRecursivo (int suma, int i, ArrayList<Integer> solucion){
-        if(suma<sum && i<(subConjunto.size()-1)){
             for(int j=i;j<subConjunto.size();j++) {
-                int s = suma + subConjunto.get(j);
+
+                s = suma + subConjunto.get(j);
                 ArrayList<Integer> sol = (ArrayList<Integer>) solucion.clone();
                 sol.add(subConjunto.get(j));
-                //System.out.print("i --> "+i+";\nsuma --> "+s+";\n\n");
-                backRecursivo(s, j + 1, sol);
+
+                backtracking(s, j + 1, sol);
             }
+
         } else {
+
             if(suma==sum){
+
+                /* Solucion encontrada, la escribimos en el fichero*/
+
                 for(int j=0;j<solucion.size();j++){
-                    System.out.print(solucion.get(j)+" ");
                     pw.print(solucion.get(j)+" ");
                 }
-                System.out.print("\n");
+
                 pw.print("\n");
             }
+
         }
     }
+
+    /* depuraEntrada elimina las entradas mayores que la suma a buscar e introduce en el fichero solucion los valores
+     * que coinciden con dicha suma, eliminandolos tambien del subconjunto de entrada.
+     */
+    private static void depuraEntrada (){
+
+        for(int i = 0; i<subConjunto.size();i++){
+
+            if(subConjunto.get(i)>sum){
+
+                subConjunto.remove(i);
+                i--;
+
+            } else {
+
+                if(subConjunto.get(i)==sum){
+
+                    pw.print(subConjunto.get(i)+"\n");
+                    subConjunto.remove(i);
+                    i--;
+
+                }
+            }
+        }
+
+    }
+
 }
