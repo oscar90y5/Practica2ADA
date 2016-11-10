@@ -182,6 +182,8 @@ public class practicaADA2 {
 
         if(suma<sum && i<(conjunto.size())){
 
+            //Si la suma parcial es menor que la que estamos buscando se haria una llamada por cada numero que no haya
+            //sido considerado aun en la solucion parcial.
             for(int j = i; j< conjunto.size(); j++) {
 
                 s = suma + conjunto.get(j);
@@ -194,11 +196,12 @@ public class practicaADA2 {
         } else {
 
             if(suma==sum){
-
+                //Solucion encontrada. Imprimimos la solucion en el fichero
                 imprimirSubconjunto(subconjunto);
             }
 
         }
+        // Si no entra en ninguno de los ifs se cortaria el hilo de ejecucion y se relizaria backtracking
     }
 
 
