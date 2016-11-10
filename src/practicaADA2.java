@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.lang.Math;
 
 public class practicaADA2 {
 
@@ -10,10 +11,11 @@ public class practicaADA2 {
     private static int sum; //Almacena la suma que buscamos.
     private static FileWriter fichero;
     private static PrintWriter pw;
-    private static boolean DEBUG = false; //si esta variable es true el algoritmo de programacion dinamica imprime la tabla
-    private static String FICHERO = "../practicaADA2/solucion.txt"; //fichero en el que se imprime los subconjuntos.
-    private static int FUNC = 1;
-    // FUNC = 1: Solucion dinamica, FUNC = 2: Solucion backtracking, FUNC = 3: compara algoritmos.
+    private static boolean DEBUG = true; //si esta variable es true el algoritmo de programacion dinamica imprime la tabla
+    private static String FICHERO = "./solucion.txt"; //fichero en el que se imprime los subconjuntos.
+    private static int FUNC = 1; //Utilizada para elegir la funcionalidad del programa
+    private static int IMPR = 1; //Utilizada para saber desde que algoritmo estamos imprimiendo
+    // FUNC = 1: Solucion dinamica o backtracking en funcion de la entrada, FUNC = 2: Compara algoritmos.
 
     public static void main(String[] args) throws IOException{
 
@@ -25,15 +27,18 @@ public class practicaADA2 {
         depuraEntrada();
 
         switch(FUNC) {
-            case 1: //resolucion con programacion dinamica
-                programacionDinamica();
+            case 1: //resolucion mas eficiente
+                if(sum > Math.pow(2, conjunto.size())){
+                    System.out.println("Resuelto por backtracking");
+                    backtracking();
+                }else{
+                    System.out.println("Resuelto por programacion dinamica");
+                    programacionDinamica();
+                }
                 break;
 
-            case 2: //resolucion con backtracking
-                backtracking();
-                break;
-
-            case 3: //resuelve con los dos algoritmos midiendo los tiempos
+            case 2:
+                 //resuelve con los dos algoritmos midiendo los tiempos
 
                 long cronometro; // variable utilizada para medir el tiempo de ejecucion de los algoritmos
 
@@ -52,8 +57,8 @@ public class practicaADA2 {
                 break;
 
             default:
-                System.out.print("ERROR: El valor de FUNC tiene que ser 1, 2 o 3.");
-                pw.print("ERROR: El valor de FUNC tiene que ser 1, 2 o 3.");
+                System.out.print("ERROR: El valor de FUNC tiene que ser 1 o 2.");
+                pw.print("ERROR: El valor de FUNC tiene que ser 1 o 2.");
         }
 
         fichero.close();
@@ -69,11 +74,11 @@ public class practicaADA2 {
 
         System.out.println("Introduzca el valor sum:");
         sum =sc.nextInt();
-        System.out.println("Introduzca los elementos del conjunto: (Para finalizar introduzca un 0)");
+        System.out.println("Introduzca los elementos del conjunto: (Para finalizar introduzca un -1)");
         while(true){
             System.out.println("Elemento "+i+":");
             dato=sc.nextInt();
-            if(dato==0){
+            if(dato==-1){
                 break;
             } else {
                 conjunto.add(dato);
@@ -111,6 +116,7 @@ public class practicaADA2 {
 
     /*Funcion que implementa el algoritmo de programacion dinamica*/
     private static void programacionDinamica(){
+        IMPR = 1; //Cambiamos el valor de FUNC para imprimir los subconjuntos en el orden encontrado
         boolean tabla[][] = generarTablaDinamica();
         if (tabla[conjunto.size()][sum]){
             if(DEBUG) {
@@ -184,6 +190,7 @@ public class practicaADA2 {
 
     /*Facilita el uso de backtracking (No es necesario conocer detalles de la implementacion).*/
     private static void backtracking (){
+        IMPR = 2; //Cambiamos el valor de FUNC para imprimir los subconjuntos en el orden encontrado
         backtracking(0,0,new ArrayList<Integer>());
     }
 
@@ -221,8 +228,8 @@ public class practicaADA2 {
 
     /*Imprime, en el fichero que indique la macro "FICHERO", el atributo subconjunto*/
     private static void imprimirSubconjunto(ArrayList<Integer> subconjunto){
-        if (FUNC==1){
-            for (int i = subconjunto.size(); i > 0; i--){
+        if (IMPR==1){
+            for (int i = subconjunto.size()-1; i > 0; i--){
                 pw.print(subconjunto.get(i)+", ");
             }
             pw.println(subconjunto.get(0));
