@@ -10,8 +10,9 @@ public class practicaADA2 {
     private static int sum; //Almacena la suma que buscamos.
     private static FileWriter fichero; //fichero en el que escribimos la solucion.
     private static PrintWriter pw;
+    private static boolean DEBUG = false;
     private static int FUNC = 1;
-    // FUNC = 1: Solucion backtracking, FUNC = 2: Solucion dinamica, FUNC = 3: compara algoritmos.
+    // FUNC = 1: Solucion dinamica, FUNC = 2: Solucion backtracking, FUNC = 3: compara algoritmos.
 
     public static void main(String[] args) throws IOException{
 
@@ -24,14 +25,15 @@ public class practicaADA2 {
 
         switch(FUNC) {
             case 1:
-                backtracking(0, 0, new ArrayList<Integer>());
-                break;
-
-            case 2:
                 programacionDinamica();
                 break;
 
+            case 2:
+                backtracking(0, 0, new ArrayList<Integer>());
+                break;
+
             case 3:
+
                 long cronometro;
 
                 pw.println("Solucion dinamica:");
@@ -109,7 +111,9 @@ public class practicaADA2 {
     private static void programacionDinamica(){
         boolean tabla[][] = generarTablaDinamica();
         if (tabla[conjunto.size()][sum]){
-            imprimirTabla(tabla);
+            if(DEBUG) {
+                imprimirTabla(tabla);
+            }
             calcularSubconjuntos(new ArrayList<Integer>(),tabla,conjunto.size(),sum);
         }
     }
@@ -200,11 +204,19 @@ public class practicaADA2 {
 
 
     private static void imprimirSubconjunto(ArrayList<Integer> subconjunto){
-
-        for (int i = 0; i < subconjunto.size()-1; i++){
-            pw.print(subconjunto.get(i)+", ");
+        if (FUNC==1){
+            for (int i = subconjunto.size(); i > 0; i--){
+                pw.print(subconjunto.get(i)+", ");
+            }
+            pw.println(subconjunto.get(0));
         }
-        pw.println(subconjunto.get(subconjunto.size()-1));
+        else{
+            for (int i = 0; i < subconjunto.size()-1; i++){
+                pw.print(subconjunto.get(i)+", ");
+            }
+            pw.println(subconjunto.get(subconjunto.size()-1));
+        }
+
     }
 
     private static void imprimirTabla(boolean tabla[][]){
